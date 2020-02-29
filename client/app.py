@@ -1,19 +1,36 @@
 import json
 import boto3
-import uuid
+import operator
+from functools import reduce
 
 
 def lambda_handler(event, context):
-    body = event["body"]
-    response = get_queue(body)
+    messages = receive_message()
+    body = json.loads(messages[0].body)
+    function = body.get('function')
+    args = body.get('args')
+
+    _operator = get_function(function)
+    result = reduce(_operator, args)
 
     return {
         "statusCode": 200,
         "body": json.dumps({
-            "message_id": response,
-            "event": body,
+            "function": function,
+            "args": args,
+            "result": result,
         }),
     }
+
+
+def get_function(function_name):
+    _functions = {
+        'sum': operator.add,
+        'subtract': operator.sub,
+        'divide': operator.truediv,
+        'multiply': operator.mul,
+    }
+    return _functions[function_name]
 
 
 def get_queue():
@@ -21,6 +38,8 @@ def get_queue():
     return sqs.get_queue_by_name(QueueName='newton_sqs.fifo')
 
 
-# def send_message(body):
-#     queue = get_queue()
-#     return queue.send_message(MessageBody=body, MessageGroupId=str(uuid.uuid4()))
+def receive_message():
+    queue = get_queue()
+    return queue.receive_messages(
+        MaxNumberOfMessages=1
+        )
