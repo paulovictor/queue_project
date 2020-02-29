@@ -23,6 +23,18 @@ Resources:
           Properties:
             Path: /server
             Method: post
+  ClientFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: client/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        Client:
+          Type: Api
+          Properties:
+            Path: /client
+            Method: get
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -32,8 +44,17 @@ Outputs:
     Description: "API Gateway endpoint URL for Prod stage for Server function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/server/"
   ServerFunction:
-    Description: "Server World Lambda Function ARN"
+    Description: "Server Lambda Function ARN"
     Value: !GetAtt ServerFunction.Arn
   ServerFunctionIamRole:
     Description: "Implicit IAM Role created for Server function"
     Value: !GetAtt ServerFunctionRole.Arn
+  ClientApi:
+    Description: "API Gateway endpoint URL for Prod stage for Client function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/client/"
+  ClientFunction:
+    Description: "Client Lambda Function ARN"
+    Value: !GetAtt ClientFunction.Arn
+  ClientFunctionIamRole:
+    Description: "Implicit IAM Role created for Client function"
+    Value: !GetAtt ClientFunctionRole.Arn
