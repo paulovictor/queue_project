@@ -1,4 +1,3 @@
-import os
 import json
 import boto3
 import uuid
@@ -16,9 +15,11 @@ def lambda_handler(event, context):
         }),
     }
 
+
 def get_queue():
     sqs = boto3.resource('sqs')
     return sqs.get_queue_by_name(QueueName='newton_sqs.fifo')
+
 
 def send_message(body):
     queue = get_queue()
