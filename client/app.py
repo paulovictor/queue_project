@@ -5,14 +5,14 @@ from functools import reduce
 
 
 def lambda_handler(event, context):
-    messages = receive_message()
-    body = json.loads(messages[0].body)
+    message = receive_message()
+    body = json.loads(message.body)
     function = body.get('function')
     args = body.get('args')
 
     _operator = get_function(function)
     result = reduce(_operator, args)
-
+    message.delete()
     return {
         "statusCode": 200,
         "body": json.dumps({
@@ -42,4 +42,4 @@ def receive_message():
     queue = get_queue()
     return queue.receive_messages(
         MaxNumberOfMessages=1
-        )
+        )[0]
