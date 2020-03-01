@@ -8,9 +8,7 @@ from unittest import mock
 
 @pytest.fixture()
 def lambda_event():
-    return {
-        "body": {},
-    }
+    return {"body": {}}
 
 
 @mock.patch("server.app.send_message")
@@ -52,4 +50,4 @@ def test_send_message(mock_get_queue, mock_uuid):
     mock_queue.send_message.assert_called_once_with(
         MessageBody='newton message',
         MessageGroupId='uuid-1234'
-        )
+    )
