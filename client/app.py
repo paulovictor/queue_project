@@ -21,12 +21,14 @@ def lambda_handler(event, context):
 
     if error_message:
         response = {
-            'status_code': 500,
-            'error': str(error_message)
+            'statusCode': 500,
+            'body': json.dumps({
+                'error': error_message,
+            })}
         }
     else:
         response = {
-            'status_code': 200,
+            'statusCode': 200,
             'body': json.dumps({
                 'function': function,
                 'args': args_list,

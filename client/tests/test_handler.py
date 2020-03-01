@@ -37,7 +37,7 @@ def test_handler(mock_receive_message, mock_process, lambda_event, message_data)
 
     data = json.loads(response["body"])
 
-    assert response["status_code"] == 200
+    assert response["statusCode"] == 200
 
     assert "function" in data.keys()
     assert "args" in data.keys()
