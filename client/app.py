@@ -6,9 +6,7 @@ from functools import reduce
 
 def lambda_handler(event, context):
     message = receive_message()
-
     function, args = get_data(message)
-
     _operator = get_function(function)
     result = reduce(_operator, args)
 
@@ -25,9 +23,7 @@ def lambda_handler(event, context):
 
 def receive_message():
     queue = get_queue()
-    return queue.receive_messages(
-        MaxNumberOfMessages=1
-        )[0]
+    return queue.receive_messages(MaxNumberOfMessages=1)[0]
 
 
 def get_queue():

@@ -17,9 +17,7 @@ class Message(NamedTuple):
 
 @pytest.fixture()
 def lambda_event():
-    return {
-        "body": {},
-    }
+    return {"body": {}}
 
 
 @pytest.fixture()
