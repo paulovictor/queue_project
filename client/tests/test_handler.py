@@ -28,14 +28,16 @@ def message_data():
         }))
 
 
+@mock.patch("client.app.process")
 @mock.patch("client.app.receive_message")
-def test_handler(mock_receive_message, lambda_event, message_data):
+def test_handler(mock_receive_message, mock_process, lambda_event, message_data):
     mock_receive_message.return_value = message_data
+    mock_process.return_value = (10, None)
     response = app.lambda_handler(lambda_event, '')
 
     data = json.loads(response["body"])
 
-    assert response["statusCode"] == 200
+    assert response["status_code"] == 200
 
     assert "function" in data.keys()
     assert "args" in data.keys()
@@ -79,3 +81,21 @@ def test_receive_message(mock_get_queue):
 
     mock_get_queue.assert_called_once_with()
     mock_queue.receive_messages.assert_called_once_with(MaxNumberOfMessages=1)
+
+
+@mock.patch("uuid.uuid4")
+@mock.patch("client.app.dynamodb")
+def test_process(mock_dynamo, mock_uuid):
+    mock_uuid.return_value = 'uuid-1234'
+    response = app.process('sum', [1, 2])
+
+    assert response == (3, None)
+
+    mock_dynamo.Table.assert_called_once_with('queue_results')
+
+    mock_dynamo.Table().put_item.assert_called_once_with(Item={
+                'ResultID': 'uuid-1234',
+                'function': 'sum',
+                'args': [1, 2],
+                'result': 3
+            })
